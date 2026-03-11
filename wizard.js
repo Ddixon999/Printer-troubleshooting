@@ -613,9 +613,98 @@ function renderSpecificFixes(container, step) {
     container.appendChild(btnGroup);
 }
 
+// Get device-specific troubleshooting steps
+function getDeviceTroubleshootingSteps(deviceType) {
+    const deviceFixes = {
+        'Square Register': {
+            title: 'Troubleshoot Your Square Register',
+            description: 'Check your Square Register for common issues.',
+            steps: [
+                'Restart your Square Register (hold power button, select Restart)',
+                'Check that Square Register software is up to date (Settings > About)',
+                'Make sure the printer is showing in Settings > Hardware',
+                'Try removing and re-adding the printer',
+                'Check if other hardware works (card reader, cash drawer)',
+                'If only printer isn\'t working, the issue is likely with the printer itself'
+            ]
+        },
+        'Square Stand': {
+            title: 'Troubleshoot Your Square Stand & iPad',
+            description: 'Check your iPad and Square Stand for common issues.',
+            steps: [
+                'Restart your iPad (hold power + volume button, slide to power off)',
+                'Check that Square POS app is up to date (App Store > Updates)',
+                'Make sure iPad iOS is up to date (Settings > General > Software Update)',
+                'Force quit and reopen Square POS app',
+                'Check if the printer shows in Square POS Settings > Hardware',
+                'Try removing and re-adding the printer in Square POS',
+                'If only printer isn\'t working, the issue is likely with the printer itself'
+            ]
+        },
+        'Square Terminal': {
+            title: 'Troubleshoot Your Square Terminal',
+            description: 'Check your Square Terminal for common issues.',
+            steps: [
+                'Restart your Square Terminal (Settings > Device > Restart)',
+                'Check that Terminal software is up to date (Settings > Device > About)',
+                'Make sure the printer shows in Settings > Hardware > Printers',
+                'Try removing and re-adding the printer',
+                'Check Terminal battery level (low battery can cause connection issues)',
+                'Try a different power outlet if plugged in',
+                'If only printer isn\'t working, the issue is likely with the printer itself'
+            ]
+        },
+        'iPad/iPhone': {
+            title: 'Troubleshoot Your iPad/iPhone',
+            description: 'Check your iOS device for common issues.',
+            steps: [
+                'Restart your iPad/iPhone (hold power + volume button, slide to power off)',
+                'Check that Square POS app is up to date (App Store > Updates)',
+                'Make sure iOS is up to date (Settings > General > Software Update)',
+                'Force quit and reopen Square POS app (swipe up from bottom, swipe app away)',
+                'Check if printer shows in Square POS Settings > Hardware',
+                'For Bluetooth printers: Check Settings > Bluetooth is ON',
+                'Try removing and re-adding the printer in Square POS',
+                'If only printer isn\'t working, the issue is likely with the printer itself'
+            ]
+        },
+        'Android device': {
+            title: 'Troubleshoot Your Android Device',
+            description: 'Check your Android device for common issues.',
+            steps: [
+                'Restart your Android device (hold power button, tap Restart)',
+                'Check that Square POS app is up to date (Play Store > My Apps)',
+                'Make sure Android OS is up to date (Settings > System > System Update)',
+                'Force stop and reopen Square POS app (Settings > Apps > Square POS > Force Stop)',
+                'Clear Square POS app cache (Settings > Apps > Square POS > Storage > Clear Cache)',
+                'Check if printer shows in Square POS Settings > Hardware',
+                'For Bluetooth printers: Check Settings > Bluetooth is ON',
+                'Try removing and re-adding the printer in Square POS',
+                'If only printer isn\'t working, the issue is likely with the printer itself'
+            ]
+        },
+        'Other': {
+            title: 'Troubleshoot Your Device',
+            description: 'Check your device for common issues.',
+            steps: [
+                'Restart your device',
+                'Check that Square POS app is up to date',
+                'Make sure your device operating system is up to date',
+                'Force quit and reopen Square POS app',
+                'Check if printer shows in Square POS Settings > Hardware',
+                'Try removing and re-adding the printer in Square POS',
+                'If only printer isn\'t working, the issue is likely with the printer itself'
+            ]
+        }
+    };
+    
+    return deviceFixes[deviceType] || deviceFixes['Other'];
+}
+
 // Get specific fixes based on issue type
 function getSpecificFixes(issueType, printerType) {
     const fixes = [];
+    const deviceType = state.answers['device'];
     
     switch(issueType) {
         case 'Printer won\'t print at all':
@@ -673,6 +762,23 @@ function getSpecificFixes(issueType, printerType) {
                     'Make sure "Receipts" or "Order Tickets" is toggled ON',
                     'Check that the correct location is selected',
                     'Try printing a test receipt'
+                ]
+            });
+            
+            // Add device troubleshooting
+            fixes.push(getDeviceTroubleshootingSteps(deviceType));
+            
+            // Add printer manufacturer escalation
+            fixes.push({
+                title: 'Contact Printer Manufacturer',
+                description: 'If none of the above steps worked, the issue may be with the printer hardware itself.',
+                steps: [
+                    'Find your printer\'s make and model (usually on a label on the printer)',
+                    'Visit the printer manufacturer\'s support website',
+                    'Look for troubleshooting guides specific to your printer model',
+                    'Contact the manufacturer\'s technical support',
+                    'Have your printer model number and serial number ready',
+                    'Explain that you\'ve tried basic troubleshooting and the printer still won\'t print'
                 ]
             });
             break;
@@ -859,6 +965,24 @@ function getSpecificFixes(issueType, printerType) {
                     ]
                 });
             }
+            
+            // Add device troubleshooting
+            fixes.push(getDeviceTroubleshootingSteps(deviceType));
+            
+            // Add printer manufacturer escalation
+            fixes.push({
+                title: 'Contact Printer Manufacturer',
+                description: 'If the printer still won\'t connect after trying all the above steps, contact the printer manufacturer.',
+                steps: [
+                    'Find your printer\'s make and model (usually on a label on the printer)',
+                    'Visit the printer manufacturer\'s support website',
+                    'Look for connection troubleshooting guides specific to your printer model',
+                    'Check if there are firmware updates available for your printer',
+                    'Contact the manufacturer\'s technical support',
+                    'Have your printer model number and serial number ready',
+                    'Explain that you\'ve tried basic troubleshooting and the printer still won\'t connect'
+                ]
+            });
             break;
             
         case 'Printer printing blank receipts':
