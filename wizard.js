@@ -1416,6 +1416,14 @@ function generateSummary() {
 function nextStep() {
     if (state.currentStep < steps.length - 1) {
         state.currentStep++;
+        
+        // Skip printer-type-help step if user selected a specific printer type (not "I'm not sure")
+        if (steps[state.currentStep].id === 'printer-type-help' && 
+            state.answers['printer-type'] && 
+            state.answers['printer-type'] !== 'I\'m not sure') {
+            state.currentStep++; // Skip to next step
+        }
+        
         renderStep(steps[state.currentStep]);
     }
 }
