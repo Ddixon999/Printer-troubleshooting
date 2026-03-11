@@ -1,48 +1,62 @@
-# 🖨️ Printer Troubleshooting Guide
+# 🖨️ Square Printer Troubleshooting Wizard
 
-Interactive troubleshooting guide for Food & Beverage support team handling printer issues with Square POS systems.
+Interactive self-service troubleshooting tool for business owners experiencing printer issues with Square POS systems.
 
 ## 🌐 Live Website
 
 Once deployed to GitHub Pages, this site will be accessible at:
 `https://ddixon999.github.io/printer-troubleshooting`
 
-## 📋 Features
+## ✨ Features
 
-- **Level-Setting Phase**: Quick checklist to identify major setup issues
-- **Discovery Phase**: Diagnostic questions to identify root causes
-- **Solutioning Phase**: Action paths for Seller, Square, and Third-party issues
-- **Quick Fixes**: Common solutions that resolve most printer problems
-- **Setup Guides**: Step-by-step instructions for USB, Wi-Fi, Ethernet, and Bluetooth printers
-- **Printer Profiles**: How to create and manage printer profiles
-- **Networking**: Glossary and troubleshooting for network-related issues
+### Interactive Wizard
+- **Step-by-step guidance** in simple, non-technical language
+- **Records your answers** as you go through troubleshooting
+- **Personalized fixes** based on your specific situation
+- **Progress tracking** so you know how far along you are
+- **Copyable summary** to send to Square Support if needed
+
+### What It Covers
+- Device and printer type identification
+- Basic setup verification checklist
+- Common quick fixes that solve most issues
+- Detailed troubleshooting steps
+- Links to Square Support articles
+- Summary generation for support tickets
 
 ## 🚀 How to Use
 
-1. Open `index.html` in any web browser
-2. Navigate between sections using the buttons at the top
-3. Follow the step-by-step guidance for troubleshooting
+1. Open `wizard.html` in any web browser
+2. Answer the questions about your printer and issue
+3. Follow the step-by-step fixes
+4. If the issue isn't resolved, copy the summary to send to Square Support
 
 ## 📱 Mobile Friendly
 
-The guide is fully responsive and works on desktop, tablet, and mobile devices.
+Works perfectly on desktop, tablet, and mobile devices - troubleshoot from anywhere!
 
-## 🔧 Supported Printer Types
+## 🔧 Supported Scenarios
 
-- Receipt Printers
-- Kitchen Printers  
-- Label Printers
-- All connection types: USB, Wi-Fi, Ethernet, Bluetooth
+- **First-time setup issues**
+- **Printer won't print**
+- **Connection problems** (USB, Wi-Fi, Ethernet, Bluetooth)
+- **Paper jams**
+- **Print quality issues**
+- **Error messages**
 
-## 📚 Resources
+## 📚 Integrated Square Support Resources
 
-- [Epson Support](https://epson.com/Support/Printers/)
-- [Star Micronics Support](https://www.starmicronics.com/support/)
-- [Zebra Support](https://www.zebra.com/us/en/support-downloads.html)
+The wizard includes links to official Square support articles:
+- Printer Troubleshooting Guide
+- Connect a Printer to Square
+- Set Up Printer Profiles
+- Print Receipts & Order Tickets
+- Static IP Setup
+- Barcode Label Printer Setup
 
 ## 👤 Author
 
-Created by ddixon@squareup.com for the Food & Beverage support team
+Created by ddixon@squareup.com for Square business owners
 
 ## 📄 License
 
