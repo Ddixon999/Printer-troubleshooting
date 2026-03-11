@@ -23,9 +23,9 @@ const steps = [
             'Square Register',
             'Square Stand',
             'Square Terminal',
+            'Square Handheld',
             'iPad/iPhone',
-            'Android device',
-            'Other'
+            'Android device'
         ]
     },
     {
@@ -50,6 +50,12 @@ const steps = [
             'Bluetooth Printer',
             'I\'m not sure'
         ]
+    },
+    {
+        id: 'printer-type-help',
+        type: 'printer-help',
+        question: 'Let\'s figure out your printer type',
+        description: 'Here\'s how to identify which type of printer you have:'
     },
     {
         id: 'issue-type',
@@ -190,11 +196,15 @@ function renderStep(step) {
     questionDiv.textContent = step.question;
     stepDiv.appendChild(questionDiv);
     
-    // Description
+    // Description (use innerHTML for network-speed step, textContent for others)
     if (step.description) {
         const descDiv = document.createElement('div');
         descDiv.className = 'description';
-        descDiv.textContent = step.description;
+        if (step.type === 'network-speed') {
+            descDiv.innerHTML = step.description;
+        } else {
+            descDiv.textContent = step.description;
+        }
         stepDiv.appendChild(descDiv);
     }
     
@@ -214,6 +224,9 @@ function renderStep(step) {
             break;
         case 'fixes':
             renderFixes(stepDiv, step);
+            break;
+        case 'printer-help':
+            renderPrinterHelp(stepDiv, step);
             break;
         case 'network-speed':
             renderNetworkSpeed(stepDiv, step);
@@ -262,9 +275,131 @@ function renderChoice(container, step) {
     
     container.appendChild(optionsDiv);
     
-    if (state.currentStep > 0) {
+    // Add back button on all choice steps except the very first step (welcome)
+    if (step.id !== 'welcome') {
         addBackButton(container);
     }
+}
+
+// Render printer type help step
+function renderPrinterHelp(container, step) {
+    // Only show if they selected "I'm not sure"
+    if (state.answers['printer-type'] !== 'I\'m not sure') {
+        nextStep();
+        return;
+    }
+    
+    // Create info cards for each printer type
+    const printerTypes = [
+        {
+            type: 'USB Printer',
+            description: 'Connects with a cable directly to your Square device',
+            identifiers: [
+                'Has a square-shaped USB cable (USB-B) plugged into the printer',
+                'Cable connects directly from printer to your Square device',
+                'No Wi-Fi or Bluetooth indicators on the printer'
+            ]
+        },
+        {
+            type: 'Wi-Fi Printer',
+            description: 'Connects wirelessly to your network',
+            identifiers: [
+                'Has a Wi-Fi symbol or indicator light on the printer',
+                'No cables connecting to your Square device',
+                'Can print from multiple devices on the same network',
+                'You set it up by connecting it to your Wi-Fi network'
+            ]
+        },
+        {
+            type: 'Ethernet Printer',
+            description: 'Connects to your router with an ethernet cable',
+            identifiers: [
+                'Has an ethernet cable (looks like a thick phone cable) plugged into the printer',
+                'Cable connects from printer to your router or network switch',
+                'Has blinking lights near the ethernet port'
+            ]
+        },
+        {
+            type: 'Bluetooth Printer',
+            description: 'Connects wirelessly directly to your device',
+            identifiers: [
+                'Has a Bluetooth symbol on the printer',
+                'No cables, and doesn\'t connect to Wi-Fi',
+                'Usually portable/battery powered',
+                'You paired it directly with your Square device'
+            ]
+        }
+    ];
+    
+    printerTypes.forEach(printer => {
+        const card = document.createElement('div');
+        card.className = 'fix-card';
+        card.style.cursor = 'pointer';
+        card.style.transition = 'all 0.2s';
+        
+        card.onmouseover = () => {
+            card.style.transform = 'scale(1.02)';
+            card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        };
+        card.onmouseout = () => {
+            card.style.transform = 'scale(1)';
+            card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        };
+        
+        card.onclick = () => {
+            state.answers['printer-type'] = printer.type;
+            nextStep();
+        };
+        
+        const title = document.createElement('h3');
+        title.textContent = printer.type;
+        title.style.color = '#3D4785';
+        card.appendChild(title);
+        
+        const desc = document.createElement('p');
+        desc.textContent = printer.description;
+        desc.style.marginBottom = '10px';
+        desc.style.fontStyle = 'italic';
+        card.appendChild(desc);
+        
+        const label = document.createElement('strong');
+        label.textContent = 'How to identify:';
+        label.style.display = 'block';
+        label.style.marginBottom = '5px';
+        card.appendChild(label);
+        
+        const ul = document.createElement('ul');
+        ul.style.marginLeft = '20px';
+        printer.identifiers.forEach(id => {
+            const li = document.createElement('li');
+            li.textContent = id;
+            li.style.marginBottom = '5px';
+            ul.appendChild(li);
+        });
+        card.appendChild(ul);
+        
+        const selectText = document.createElement('div');
+        selectText.textContent = '👆 Click here if this matches your printer';
+        selectText.style.marginTop = '10px';
+        selectText.style.textAlign = 'center';
+        selectText.style.color = '#3D4785';
+        selectText.style.fontWeight = 'bold';
+        card.appendChild(selectText);
+        
+        container.appendChild(card);
+    });
+    
+    // Add back button
+    const btnGroup = document.createElement('div');
+    btnGroup.className = 'button-group';
+    
+    const backBtn = document.createElement('button');
+    backBtn.className = 'btn btn-secondary';
+    backBtn.textContent = 'Back';
+    backBtn.onclick = () => previousStep();
+    btnGroup.appendChild(backBtn);
+    
+    container.appendChild(btnGroup);
 }
 
 // Render text input step
@@ -364,12 +499,6 @@ function renderNetworkSpeed(container, step) {
     if (!isNetworkPrinter || !isNetworkIssue || quickWorked === 'Yes! It\'s working now') {
         nextStep();
         return;
-    }
-    
-    // Update description to allow HTML
-    const descDiv = container.querySelector('.description');
-    if (descDiv) {
-        descDiv.innerHTML = step.description;
     }
     
     // Create input fields
@@ -531,6 +660,86 @@ function renderSpecificFixes(container, step) {
     const issueType = state.answers['issue-type'];
     const printerType = state.answers['printer-type'];
     
+    // For paper jam and print quality issues, skip straight to the "worked" question
+    // since we're just directing them to the manufacturer
+    if (issueType === 'Paper jam' || issueType === 'Poor print quality (faded, lines, smudges)') {
+        // Show manufacturer contact info directly
+        const manufacturerCard = document.createElement('div');
+        manufacturerCard.className = 'fix-card';
+        
+        const title = document.createElement('h3');
+        title.textContent = 'Contact Printer Manufacturer';
+        manufacturerCard.appendChild(title);
+        
+        const desc = document.createElement('p');
+        if (issueType === 'Paper jam') {
+            desc.textContent = 'Paper jams require printer-specific troubleshooting. Contact the manufacturer for assistance.';
+        } else {
+            desc.textContent = 'Print quality issues require printer-specific troubleshooting. Contact the manufacturer for assistance.';
+        }
+        desc.style.marginBottom = '10px';
+        manufacturerCard.appendChild(desc);
+        
+        const ol = document.createElement('ol');
+        const steps = [
+            'Find your printer\'s make and model (usually on a label on the printer)',
+            'If you have a Star Micronics printer (sold on Square Hardware site):',
+            '  • Call Star Micronics Support: 1-800-782-7636',
+            '  • Visit: https://www.starmicronics.com/support/',
+            'For other printer brands:',
+            '  • Visit the manufacturer\'s support website',
+            issueType === 'Paper jam' ? '  • Look for paper jam troubleshooting guides' : '  • Look for print quality troubleshooting guides',
+            '  • Contact their technical support',
+            'Have your printer model number and serial number ready'
+        ];
+        
+        if (issueType === 'Poor print quality (faded, lines, smudges)') {
+            steps.push('Describe the specific quality issue (faded, lines, smudges, etc.)');
+        }
+        
+        steps.forEach(stepText => {
+            const li = document.createElement('li');
+            li.textContent = stepText;
+            ol.appendChild(li);
+        });
+        manufacturerCard.appendChild(ol);
+        
+        container.appendChild(manufacturerCard);
+        
+        // Add note that they should contact manufacturer
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-info';
+        alert.innerHTML = '<strong>Note:</strong> These issues are best handled by the printer manufacturer who can provide model-specific guidance.';
+        container.appendChild(alert);
+        
+        // Skip to the "worked" question
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'button-group';
+        
+        const backBtn = document.createElement('button');
+        backBtn.className = 'btn btn-secondary';
+        backBtn.textContent = 'Back';
+        backBtn.onclick = () => previousStep();
+        btnGroup.appendChild(backBtn);
+        
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'btn';
+        nextBtn.textContent = 'Continue';
+        nextBtn.onclick = () => {
+            // Record that we showed manufacturer info
+            if (!state.fixesTried) state.fixesTried = [];
+            state.fixesTried.push({
+                fix: 'Contact Printer Manufacturer',
+                tried: true
+            });
+            nextStep();
+        };
+        btnGroup.appendChild(nextBtn);
+        
+        container.appendChild(btnGroup);
+        return;
+    }
+    
     const specificFixes = getSpecificFixes(issueType, printerType);
     
     if (specificFixes.length === 0) {
@@ -650,6 +859,19 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Make sure the printer shows in Settings > Hardware > Printers',
                 'Try removing and re-adding the printer',
                 'Check Terminal battery level (low battery can cause connection issues)',
+                'Try a different power outlet if plugged in',
+                'If only printer isn\'t working, the issue is likely with the printer itself'
+            ]
+        },
+        'Square Handheld': {
+            title: 'Troubleshoot Your Square Handheld',
+            description: 'Check your Square Handheld for common issues.',
+            steps: [
+                'Restart your Square Handheld (Settings > Device > Restart)',
+                'Check that Handheld software is up to date (Settings > Device > About)',
+                'Make sure the printer shows in Settings > Hardware > Printers',
+                'Try removing and re-adding the printer',
+                'Check Handheld battery level (low battery can cause connection issues)',
                 'Try a different power outlet if plugged in',
                 'If only printer isn\'t working, the issue is likely with the printer itself'
             ]
@@ -774,9 +996,13 @@ function getSpecificFixes(issueType, printerType) {
                 description: 'If none of the above steps worked, the issue may be with the printer hardware itself.',
                 steps: [
                     'Find your printer\'s make and model (usually on a label on the printer)',
-                    'Visit the printer manufacturer\'s support website',
-                    'Look for troubleshooting guides specific to your printer model',
-                    'Contact the manufacturer\'s technical support',
+                    'If you have a Star Micronics printer (sold on Square Hardware site):',
+                    '  • Call Star Micronics Support: 1-800-782-7636',
+                    '  • Visit: https://www.starmicronics.com/support/',
+                    'For other printer brands:',
+                    '  • Visit the manufacturer\'s support website',
+                    '  • Look for troubleshooting guides specific to your printer model',
+                    '  • Contact their technical support',
                     'Have your printer model number and serial number ready',
                     'Explain that you\'ve tried basic troubleshooting and the printer still won\'t print'
                 ]
@@ -926,10 +1152,14 @@ function getSpecificFixes(issueType, printerType) {
                 description: 'If the printer still won\'t connect after trying all the above steps, contact the printer manufacturer.',
                 steps: [
                     'Find your printer\'s make and model (usually on a label on the printer)',
-                    'Visit the printer manufacturer\'s support website',
-                    'Look for connection troubleshooting guides specific to your printer model',
-                    'Check if there are firmware updates available for your printer',
-                    'Contact the manufacturer\'s technical support',
+                    'If you have a Star Micronics printer (sold on Square Hardware site):',
+                    '  • Call Star Micronics Support: 1-800-782-7636',
+                    '  • Visit: https://www.starmicronics.com/support/',
+                    'For other printer brands:',
+                    '  • Visit the manufacturer\'s support website',
+                    '  • Look for connection troubleshooting guides specific to your printer model',
+                    '  • Check if there are firmware updates available for your printer',
+                    '  • Contact their technical support',
                     'Have your printer model number and serial number ready',
                     'Explain that you\'ve tried basic troubleshooting and the printer still won\'t connect'
                 ]
