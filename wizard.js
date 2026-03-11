@@ -142,6 +142,12 @@ const steps = [
         ]
     },
     {
+        id: 'network-speed-check',
+        type: 'network-speed',
+        question: 'Let\'s check your internet speed',
+        description: 'For network printers to work properly, you need at least <strong>25 Mbps upload</strong> and <strong>25 Mbps download</strong> speed. You can test your speed at <a href="https://fast.com" target="_blank">fast.com</a> or <a href="https://speedtest.net" target="_blank">speedtest.net</a>.'
+    },
+    {
         id: 'specific-fixes',
         type: 'specific-fixes',
         question: 'Let\'s try specific solutions for your issue',
@@ -208,6 +214,9 @@ function renderStep(step) {
             break;
         case 'fixes':
             renderFixes(stepDiv, step);
+            break;
+        case 'network-speed':
+            renderNetworkSpeed(stepDiv, step);
             break;
         case 'specific-fixes':
             renderSpecificFixes(stepDiv, step);
@@ -341,6 +350,116 @@ function renderChecklist(container, step) {
     container.appendChild(btnGroup);
 }
 
+// Render network speed check step
+function renderNetworkSpeed(container, step) {
+    // Only show this step if it's a network-related issue with Wi-Fi or Ethernet printer
+    const printerType = state.answers['printer-type'];
+    const issueType = state.answers['issue-type'];
+    const quickWorked = state.answers['quick-worked'];
+    
+    const isNetworkPrinter = printerType === 'Wi-Fi Printer' || printerType === 'Ethernet Printer';
+    const isNetworkIssue = issueType === 'Printer not connecting' || issueType === 'Printer won\'t print at all';
+    
+    // Skip if not network-related or if quick fixes already worked
+    if (!isNetworkPrinter || !isNetworkIssue || quickWorked === 'Yes! It\'s working now') {
+        nextStep();
+        return;
+    }
+    
+    // Update description to allow HTML
+    const descDiv = container.querySelector('.description');
+    if (descDiv) {
+        descDiv.innerHTML = step.description;
+    }
+    
+    // Create input fields
+    const inputContainer = document.createElement('div');
+    inputContainer.style.marginTop = '20px';
+    
+    const uploadLabel = document.createElement('label');
+    uploadLabel.textContent = 'Upload Speed (Mbps):';
+    uploadLabel.style.display = 'block';
+    uploadLabel.style.marginBottom = '5px';
+    uploadLabel.style.fontWeight = 'bold';
+    
+    const uploadInput = document.createElement('input');
+    uploadInput.type = 'number';
+    uploadInput.className = 'input-field';
+    uploadInput.placeholder = 'e.g., 50';
+    uploadInput.min = '0';
+    uploadInput.step = '0.1';
+    uploadInput.value = state.answers['upload-speed'] || '';
+    uploadInput.style.marginBottom = '15px';
+    
+    const downloadLabel = document.createElement('label');
+    downloadLabel.textContent = 'Download Speed (Mbps):';
+    downloadLabel.style.display = 'block';
+    downloadLabel.style.marginBottom = '5px';
+    downloadLabel.style.fontWeight = 'bold';
+    
+    const downloadInput = document.createElement('input');
+    downloadInput.type = 'number';
+    downloadInput.className = 'input-field';
+    downloadInput.placeholder = 'e.g., 50';
+    downloadInput.min = '0';
+    downloadInput.step = '0.1';
+    downloadInput.value = state.answers['download-speed'] || '';
+    
+    inputContainer.appendChild(uploadLabel);
+    inputContainer.appendChild(uploadInput);
+    inputContainer.appendChild(downloadLabel);
+    inputContainer.appendChild(downloadInput);
+    
+    container.appendChild(inputContainer);
+    
+    // Warning message container (initially hidden)
+    const warningDiv = document.createElement('div');
+    warningDiv.className = 'alert alert-warning';
+    warningDiv.style.display = 'none';
+    warningDiv.style.marginTop = '15px';
+    warningDiv.innerHTML = '<strong>⚠️ Low Internet Speed Detected</strong><br>Your internet speed is below the minimum requirement of 25 Mbps upload and 25 Mbps download. This may be causing your printer connection issues.<br><br><strong>Next Step:</strong> Contact your Internet Service Provider (ISP) to upgrade your internet plan or troubleshoot speed issues.';
+    container.appendChild(warningDiv);
+    
+    const btnGroup = document.createElement('div');
+    btnGroup.className = 'button-group';
+    
+    const backBtn = document.createElement('button');
+    backBtn.className = 'btn btn-secondary';
+    backBtn.textContent = 'Back';
+    backBtn.onclick = () => previousStep();
+    btnGroup.appendChild(backBtn);
+    
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'btn';
+    nextBtn.textContent = 'Continue';
+    nextBtn.onclick = () => {
+        const uploadSpeed = parseFloat(uploadInput.value) || 0;
+        const downloadSpeed = parseFloat(downloadInput.value) || 0;
+        
+        if (uploadSpeed === 0 || downloadSpeed === 0) {
+            alert('Please enter both upload and download speeds.');
+            return;
+        }
+        
+        state.answers['upload-speed'] = uploadSpeed;
+        state.answers['download-speed'] = downloadSpeed;
+        
+        // Check if speeds meet minimum requirements
+        if (uploadSpeed < 25 || downloadSpeed < 25) {
+            state.answers['speed-below-threshold'] = true;
+            warningDiv.style.display = 'block';
+            nextBtn.textContent = 'Continue Anyway';
+            nextBtn.onclick = () => nextStep();
+        } else {
+            state.answers['speed-below-threshold'] = false;
+            nextStep();
+        }
+    };
+    btnGroup.appendChild(nextBtn);
+    
+    container.appendChild(btnGroup);
+}
+
 // Render fixes step
 function renderFixes(container, step) {
     step.fixes.forEach((fix, index) => {
@@ -417,6 +536,14 @@ function renderSpecificFixes(container, step) {
     if (specificFixes.length === 0) {
         nextStep();
         return;
+    }
+    
+    // Show ISP warning if internet speed was below threshold
+    if (state.answers['speed-below-threshold']) {
+        const ispAlert = document.createElement('div');
+        ispAlert.className = 'alert alert-warning';
+        ispAlert.innerHTML = '<strong>⚠️ Internet Speed Issue Detected</strong><br>Your internet speed is below the minimum requirement. We recommend contacting your Internet Service Provider (ISP) to resolve this before trying additional fixes. However, you can still try the troubleshooting steps below.';
+        container.appendChild(ispAlert);
     }
     
     specificFixes.forEach((fix, index) => {
@@ -916,7 +1043,19 @@ function generateSummary() {
     summary += '--- ISSUE DETAILS ---\n';
     summary += `Problem: ${state.answers['issue-type'] || 'Not specified'}\n`;
     summary += `When Started: ${state.answers['when-started'] || 'Not specified'}\n`;
-    summary += `Recent Changes: ${state.answers['changes'] || 'None reported'}\n\n`;
+    summary += `Recent Changes: ${state.answers['changes'] || 'None reported'}\n`;
+    
+    // Add internet speed info if checked
+    if (state.answers['upload-speed'] || state.answers['download-speed']) {
+        summary += `\nInternet Speed:\n`;
+        summary += `  Upload: ${state.answers['upload-speed'] || 'Not tested'} Mbps\n`;
+        summary += `  Download: ${state.answers['download-speed'] || 'Not tested'} Mbps\n`;
+        if (state.answers['speed-below-threshold']) {
+            summary += `  ⚠️ WARNING: Speed below minimum requirement (25 Mbps up/down)\n`;
+            summary += `  Recommendation: Contact ISP to upgrade internet service\n`;
+        }
+    }
+    summary += '\n';
     
     summary += '--- BASIC CHECKS COMPLETED ---\n';
     if (state.answers['basic-checks']) {
