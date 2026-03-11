@@ -283,9 +283,10 @@ function renderChoice(container, step) {
 
 // Render printer type help step
 function renderPrinterHelp(container, step) {
-    // Only show if they selected "I'm not sure"
-    if (state.answers['printer-type'] !== 'I\'m not sure') {
-        nextStep();
+    // If they already have a printer type selected (not "I'm not sure"), skip this step
+    if (state.answers['printer-type'] && state.answers['printer-type'] !== 'I\'m not sure') {
+        // We're on the help step but shouldn't be - go back to printer-type
+        previousStep();
         return;
     }
     
