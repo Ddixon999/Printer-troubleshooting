@@ -785,86 +785,37 @@ function getSpecificFixes(issueType, printerType) {
             
         case 'Paper jam':
             fixes.push({
-                title: 'Clear the Paper Jam',
-                description: 'Carefully remove jammed paper from the printer.',
+                title: 'Contact Printer Manufacturer',
+                description: 'Paper jams require printer-specific troubleshooting. Contact the manufacturer for assistance.',
                 steps: [
-                    'Turn off the printer',
-                    'Open the paper cover',
-                    'Gently pull out any jammed paper (pull in the direction it normally feeds)',
-                    'Check for any torn pieces of paper inside',
-                    'Make sure the paper roll is loaded correctly (check for correct orientation)',
-                    'Close the cover and turn the printer back on',
-                    'Try printing a test receipt'
-                ]
-            });
-            
-            fixes.push({
-                title: 'Check Paper Quality and Loading',
-                description: 'Ensure you\'re using the correct paper type.',
-                steps: [
-                    'Remove the current paper roll',
-                    'Check that you\'re using thermal paper (not regular paper)',
-                    'Make sure the paper width matches your printer (usually 3 1/8" or 80mm)',
-                    'Load paper with the thermal side facing the correct direction',
-                    'Make sure the paper feeds straight (not at an angle)',
-                    'Don\'t overfill - leave some space in the paper compartment',
-                    'Try printing a test receipt'
-                ]
-            });
-            
-            fixes.push({
-                title: 'Clean the Printer',
-                description: 'Dust and debris can cause paper jams.',
-                steps: [
-                    'Turn off and unplug the printer',
-                    'Open the paper compartment',
-                    'Use a soft, dry cloth to wipe inside the paper path',
-                    'Check for any stuck labels or debris',
-                    'Clean the paper feed rollers gently',
-                    'Close everything and plug back in',
-                    'Try printing a test receipt'
+                    'Find your printer\'s make and model (usually on a label on the printer)',
+                    'If you have a Star Micronics printer (sold on Square Hardware site):',
+                    '  • Call Star Micronics Support: 1-800-782-7636',
+                    '  • Visit: https://www.starmicronics.com/support/',
+                    'For other printer brands:',
+                    '  • Visit the manufacturer\'s support website',
+                    '  • Look for paper jam troubleshooting guides',
+                    '  • Contact their technical support',
+                    'Have your printer model number and serial number ready'
                 ]
             });
             break;
             
         case 'Poor print quality (faded, lines, smudges)':
             fixes.push({
-                title: 'Clean the Print Head',
-                description: 'A dirty print head is the most common cause of poor print quality.',
+                title: 'Contact Printer Manufacturer',
+                description: 'Print quality issues require printer-specific troubleshooting. Contact the manufacturer for assistance.',
                 steps: [
-                    'Turn off the printer',
-                    'Open the paper compartment',
-                    'Locate the print head (the dark bar across the paper path)',
-                    'Use a cotton swab dipped in rubbing alcohol (70% or higher)',
-                    'Gently wipe the print head from side to side',
-                    'Let it dry for 2-3 minutes',
-                    'Close the compartment and turn on the printer',
-                    'Try printing a test receipt'
-                ]
-            });
-            
-            fixes.push({
-                title: 'Check Paper Quality',
-                description: 'Low-quality or old thermal paper causes faded prints.',
-                steps: [
-                    'Check if your thermal paper is expired or old',
-                    'Try scratching the paper with your fingernail - it should leave a dark mark',
-                    'If no mark appears, the paper is bad or loaded backwards',
-                    'Replace with fresh, high-quality thermal paper',
-                    'Make sure thermal side is facing the print head',
-                    'Try printing a test receipt'
-                ]
-            });
-            
-            fixes.push({
-                title: 'Adjust Print Density',
-                description: 'Some printers allow you to adjust print darkness.',
-                steps: [
-                    'Check your printer manual for density adjustment',
-                    'Some printers have a small dial or DIP switches',
-                    'Increase the density/darkness setting',
-                    'Try printing a test receipt',
-                    'Adjust until print quality is acceptable'
+                    'Find your printer\'s make and model (usually on a label on the printer)',
+                    'If you have a Star Micronics printer (sold on Square Hardware site):',
+                    '  • Call Star Micronics Support: 1-800-782-7636',
+                    '  • Visit: https://www.starmicronics.com/support/',
+                    'For other printer brands:',
+                    '  • Visit the manufacturer\'s support website',
+                    '  • Look for print quality troubleshooting guides',
+                    '  • Contact their technical support',
+                    'Have your printer model number and serial number ready',
+                    'Describe the specific quality issue (faded, lines, smudges, etc.)'
                 ]
             });
             break;
