@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Printer Troubleshooting Guide</title>
+    <title>Square Printer Troubleshooting</title>
     <style>
         * {
             margin: 0;
@@ -13,13 +13,13 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3D4785 0%, #2D3561 100%);
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
@@ -28,14 +28,14 @@
         }
         
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3D4785 0%, #2D3561 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
         
         .header h1 {
-            font-size: 2.5em;
+            font-size: 2.2em;
             margin-bottom: 10px;
         }
         
@@ -44,101 +44,115 @@
             opacity: 0.9;
         }
         
+        .progress-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #3D4785 0%, #5B68B6 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
         .content {
             padding: 40px;
         }
         
-        .phase {
-            margin-bottom: 40px;
-            padding: 25px;
+        .step {
+            display: none;
+        }
+        
+        .step.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .question {
+            font-size: 1.4em;
+            color: #2D3561;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .description {
+            color: #6c757d;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .option-btn {
+            padding: 20px;
             background: #f8f9fa;
-            border-radius: 15px;
-            border-left: 5px solid #667eea;
-        }
-        
-        .phase h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-        
-        .phase h3 {
-            color: #764ba2;
-            margin: 20px 0 10px 0;
-            font-size: 1.3em;
-        }
-        
-        .checklist {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .checklist li {
-            padding: 12px;
-            margin: 8px 0;
-            background: white;
-            border-radius: 8px;
-            border-left: 4px solid #28a745;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
+            text-align: left;
+            font-size: 1.1em;
+            color: #2D3561;
         }
         
-        .checklist li:hover {
+        .option-btn:hover {
+            background: #e9ecef;
+            border-color: #3D4785;
             transform: translateX(5px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .checklist li::before {
-            content: "✓ ";
-            color: #28a745;
-            font-weight: bold;
-            margin-right: 10px;
+        .option-btn.selected {
+            background: #3D4785;
+            color: white;
+            border-color: #3D4785;
         }
         
-        .questions {
-            background: white;
+        .input-field {
+            width: 100%;
             padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-family: inherit;
         }
         
-        .questions li {
-            padding: 10px 0;
-            border-bottom: 1px solid #e9ecef;
+        .input-field:focus {
+            outline: none;
+            border-color: #3D4785;
         }
         
-        .questions li:last-child {
-            border-bottom: none;
-        }
-        
-        .quick-fix {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-        }
-        
-        .quick-fix strong {
-            color: #856404;
+        textarea.input-field {
+            min-height: 120px;
+            resize: vertical;
         }
         
         .btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background: #667eea;
+            padding: 15px 35px;
+            background: #3D4785;
             color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            margin: 10px 10px 10px 0;
             border: none;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 1.1em;
             transition: all 0.3s;
+            margin-right: 10px;
         }
         
         .btn:hover {
-            background: #764ba2;
+            background: #2D3561;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
@@ -151,66 +165,161 @@
             background: #5a6268;
         }
         
-        .section-nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 30px;
+        .btn-success {
+            background: #28a745;
         }
         
-        .hidden {
-            display: none;
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checklist-item:hover {
+            background: #e9ecef;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .fix-card {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+        }
+        
+        .fix-card h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .fix-card ol {
+            margin-left: 20px;
+            color: #856404;
+        }
+        
+        .fix-card li {
+            margin: 8px 0;
+        }
+        
+        .summary-box {
+            background: #f8f9fa;
+            border: 2px solid #3D4785;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .summary-box h3 {
+            color: #3D4785;
+            margin-bottom: 15px;
+        }
+        
+        .summary-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            max-height: 400px;
+            overflow-y: auto;
         }
         
         .alert {
             padding: 15px;
             margin: 15px 0;
-            border-radius: 8px;
+            border-radius: 10px;
+            border-left: 4px solid;
         }
         
         .alert-info {
             background: #d1ecf1;
-            border-left: 4px solid #17a2b8;
+            border-color: #17a2b8;
             color: #0c5460;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
         }
         
         .alert-warning {
             background: #fff3cd;
-            border-left: 4px solid #ffc107;
+            border-color: #ffc107;
             color: #856404;
         }
         
-        .alert-danger {
-            background: #f8d7da;
-            border-left: 4px solid #dc3545;
-            color: #721c24;
+        .support-links {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
         }
         
-        .glossary-term {
-            margin: 15px 0;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            border-left: 4px solid #17a2b8;
+        .support-links h4 {
+            color: #004085;
+            margin-bottom: 15px;
         }
         
-        .glossary-term strong {
-            color: #17a2b8;
+        .support-links a {
             display: block;
-            margin-bottom: 5px;
+            color: #004085;
+            text-decoration: none;
+            padding: 8px 0;
+            transition: all 0.3s;
+        }
+        
+        .support-links a:hover {
+            color: #3D4785;
+            padding-left: 10px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
         }
         
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 1.8em;
+                font-size: 1.6em;
             }
             
             .content {
-                padding: 20px;
+                padding: 25px;
             }
             
-            .phase {
+            .question {
+                font-size: 1.2em;
+            }
+            
+            .option-btn {
                 padding: 15px;
+                font-size: 1em;
             }
         }
     </style>
@@ -218,8 +327,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🖨️ Printer Troubleshooting Guide</h1>
-            <p>Interactive guide for Food & Beverage support team</p>
+            <h1>🖨️ Square Printer Troubleshooting</h1>
+            <p>Let's get your printer working again</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
         </div>
         
         <div class="content">
