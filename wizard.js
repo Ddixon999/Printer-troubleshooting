@@ -2,7 +2,7 @@
 const state = {
     currentStep: 0,
     answers: {},
-    fixes Tried: []
+    fixesTried: []
 };
 
 // Wizard Steps
