@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Printer Troubleshooting Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .phase {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .phase h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .phase h3 {
+            color: #764ba2;
+            margin: 20px 0 10px 0;
+            font-size: 1.3em;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checklist li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .checklist li::before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .questions {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .questions li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .questions li:last-child {
+            border-bottom: none;
+        }
+        
+        .quick-fix {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        
+        .quick-fix strong {
+            color: #856404;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 10px 10px 10px 0;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .section-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .glossary-term {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .glossary-term strong {
+            color: #17a2b8;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .phase {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖨️ Printer Troubleshooting Guide</h1>
+            <p>Interactive guide for Food & Beverage support team</p>
+        </div>
+        
+        <div class="content">
+            <div class="section-nav">
+                <button class="btn" onclick="showSection('level-setting')">Level-Setting</button>
+                <button class="btn" onclick="showSection('discovery')">Discovery</button>
+                <button class="btn" onclick="showSection('solutioning')">Solutioning</button>
+                <button class="btn" onclick="showSection('quick-fixes')">Quick Fixes</button>
+                <button class="btn" onclick="showSection('setup')">Setup Guide</button>
+                <button class="btn" onclick="showSection('profiles')">Printer Profiles</button>
+                <button class="btn" onclick="showSection('networking')">Networking</button>
+            </div>
+            
+            <!-- Level-Setting Phase -->
+            <div id="level-setting" class="phase">
+                <h2>📋 Level-Setting Phase</h2>
+                <p>Use this checklist to quickly determine whether there is a major issue in the setup of the printer. In order for a seller's printer to work, all of the following must be true:</p>
+                
+                <h3>The printer must be...</h3>
+                <ul class="checklist">
+                    <li>Compatible with Square POS</li>
+                    <li>Loaded with correct paper</li>
+                    <li>Powered on</li>
+                    <li>Connected correctly</li>
+                    <li>Assigned to a Printer Profile</li>
+                </ul>
+            </div>
+            
+            <!-- Discovery Phase -->
+            <div id="discovery" class="phase hidden">
+                <h2>🔍 Discovery Phase</h2>
+                <p>Ask questions to diagnose the seller's issue. Use the process of elimination to rule out potential problems until you find the true root cause.</p>
+                
+                <h3>Key Questions to Ask:</h3>
+                <ul class="questions">
+                    <li><strong>Has it worked before or is this your first time setting up?</strong><br>
+                    <em>If first time, the issue is probably with the setup process. Walk them through setup step-by-step.</em></li>
+                    
+                    <li><strong>What is the make and model of the printer you're using?</strong><br>
+                    <em>Use this info to locate the printer's user manual online.</em></li>
+                    
+                    <li><strong>What device is your printer connected to?</strong><br>
+                    <em>Different Square devices may have different setup procedures.</em></li>
+                    
+                    <li><strong>How many printers aren't working?</strong><br>
+                    <em>Multiple printers = network issue. Single printer = printer/device issue.</em></li>
+                    
+                    <li><strong>Are there any lights flashing or error messages being shown?</strong><br>
+                    <em>The printer's user manual can help diagnose error messages.</em></li>
+                    
+                    <li><strong>Is the printer powered on?</strong><br>
+                    <em>Check wall outlet or power cord if no power.</em></li>
+                    
+                    <li><strong>Has anything in your setup recently changed?</strong><br>
+                    <em>Recent changes may coincide with the issue.</em></li>
+                    
+                    <li><strong>Is the printer loaded with the correct paper?</strong><br>
+                    <em>Incorrect paper may prevent proper function.</em></li>
+                </ul>
+                
+                <h3>🎯 Key Phrases to Listen For:</h3>
+                <div class="alert alert-info">
+                    <strong>"Internet is out" / "offline payments"</strong> → Ethernet printers may be impacted
+                </div>
+                <div class="alert alert-info">
+                    <strong>"Setting up our new hardware"</strong> → Most likely seller error - back to basics
+                </div>
+                <div class="alert alert-info">
+                    <strong>"Just updated our software"</strong> → New UI/feature launch causing unexpected behavior
+                </div>
+                <div class="alert alert-info">
+                    <strong>"Recent update to internal network"</strong> → Ethernet printers may be impacted
+                </div>
+                <div class="alert alert-warning">
+                    <strong>"Error codes"</strong> → Refer to user manual to resolve
+                </div>
+                <div class="alert alert-info">
+                    <strong>"Moved/rearranged/relocated devices"</strong> → Check all cables are plugged in correctly
+                </div>
+            </div>
+            
+            <!-- Solutioning Phase -->
+            <div id="solutioning" class="phase hidden">
+                <h2>🛠️ Solutioning Phase</h2>
+                <p>Take action to resolve the issue based on the type of problem identified.</p>
+                
+                <h3>🟢 Seller Issue</h3>
+                <div class="alert alert-info">
+                    <p><strong>These issues can be resolved through troubleshooting with the seller.</strong></p>
+                    <p>Focus on troubleshooting steps around setup and continue to align on expected behavior.</p>
+                </div>
+                
+                <h3>🔵 Square Issue</h3>
+                <div class="alert alert-warning">
+                    <p><strong>Problems with Square hardware or software.</strong></p>
+                    <p>These issues may require an incident to be filed (software) or a warranty (hardware).</p>
+                </div>
+                
+                <h3>🟠 Third-Party Issue</h3>
+                <div class="alert alert-danger">
+                    <p><strong>Issues with the seller's ISP or the printer manufacturer.</strong></p>
+                    <p>As the solution falls outside of your scope, you'll provide the best support by referring the seller to the third party directly.</p>
+                </div>
+            </div>
+            
+            <!-- Quick Fixes -->
+            <div id="quick-fixes" class="phase hidden">
+                <h2>⚡ Quick Fixes</h2>
+                <p>Here are some quick steps you can take which can resolve many printer issues:</p>
+                
+                <div class="quick-fix">
+                    <strong>First Time Setup:</strong> Make sure the printer is set up correctly and a printer profile has been created and assigned appropriately.
+                </div>
+                
+                <div class="quick-fix">
+                    <strong>Check Hardware Hub:</strong> See if the printer is showing as connected.
+                </div>
+                
+                <div class="quick-fix">
+                    <strong>Power Cycle:</strong> Turn the printer off and back on again.
+                </div>
+                
+                <div class="quick-fix">
+                    <strong>Check Paper:</strong> Make sure the printer is not completely out of or low on printer paper.
+                </div>
+                
+                <div class="quick-fix">
+                    <strong>Cable Check:</strong> Ensure all cables are securely plugged into the correct ports. Unplug all cables and replug them in.
+                </div>
+                
+                <div class="quick-fix">
+                    <strong>Wi-Fi/Ethernet:</strong> Turn the device's Wi-Fi off and back on. Double check that both printer and device are on the same network.
+                </div>
+                
+                <div class="quick-fix">
+                    <strong>Bluetooth:</strong> Turn Bluetooth off and back on. Confirm app permissions for bluetooth are enabled (when applicable).
+                </div>
+                
+                <div class="quick-fix">
+                    <strong>Printer Profile:</strong> Make sure there is a printer profile created. If not, have the Seller create one and assign it to the printer!
+                </div>
+                
+                <div class="quick-fix">
+                    <strong>Device Restart:</strong> Turn the device on and off again.
+                </div>
+            </div>
+            
+            <!-- Setup Guide -->
+            <div id="setup" class="phase hidden">
+                <h2>🔧 Printer Setup Guide</h2>
+                <p>Walk sellers through the process of setting up their printer for the first time.</p>
+                
+                <h3>📚 Manufacturer Resources:</h3>
+                <ul class="questions">
+                    <li><a href="https://epson.com/Support/Printers/" target="_blank">Epson Support</a></li>
+                    <li><a href="https://www.starmicronics.com/support/" target="_blank">Star Micronics Support</a></li>
+                    <li><a href="https://www.zebra.com/us/en/support-downloads.html" target="_blank">Zebra Support</a></li>
+                </ul>
+                
+                <h3>🔌 USB Printer Setup</h3>
+                <ol class="questions">
+                    <li>Connect USB cable and USB adapter (if necessary)</li>
+                    <li>Connect the USB cable to the USB-B port of the printer</li>
+                    <li>Wire the USB cable through cable outlets</li>
+                    <li>Connect the other end to the Square device</li>
+                    <li>Connect power cable and insert into electrical outlet</li>
+                </ol>
+                <div class="alert alert-warning">
+                    <strong>Note:</strong> To transfer data, connect to the USB-B port. If connected to USB-A port, the device will only be charged.
+                </div>
+                
+                <h3>📡 Wi-Fi Printer Setup</h3>
+                <ol class="questions">
+                    <li>Connect power cable and route through cable outlets</li>
+                    <li>Insert power cable into electrical outlet</li>
+                    <li>Connect to Wi-Fi network (refer to printer manual for specific instructions)</li>
+                </ol>
+                
+                <h3>🌐 Ethernet Printer Setup</h3>
+                <ol class="questions">
+                    <li>Connect Ethernet cable (category 5 or higher) to router or wall jack</li>
+                    <li>Connect other side to LAN connector of printer</li>
+                    <li>Route the Ethernet cable through cable outlets</li>
+                    <li>Connect power cable and route through outlets</li>
+                    <li>Insert power cable into electrical outlet</li>
+                </ol>
+                
+                <h3>📱 Bluetooth Printer Setup</h3>
+                <ol class="questions">
+                    <li>Connect power cable and route through outlets</li>
+                    <li>Insert power cable into electrical outlet</li>
+                    <li>From Square device: Settings > Hardware > Printers</li>
+                    <li>Tap Profiles > Create printer profile</li>
+                    <li>Enter a name for your printer profile</li>
+                    <li>Tap Select Printer > Bluetooth printer</li>
+                    <li>Follow on-screen instructions</li>
+                    <li>Perform a print test</li>
+                    <li>Select what you'll use this printer for</li>
+                    <li>Tap Save</li>
+                </ol>
+            </div>
+            
+            <!-- Printer Profiles -->
+            <div id="profiles" class="phase hidden">
+                <h2>📝 Printer Profiles</h2>
+                <p>Printer Profiles are printer settings which are shared across devices and locations.</p>
+                
+                <h3>🔗 Connect to AirPrint Printer</h3>
+                <ol class="questions">
+                    <li>Square POS App > More > Settings > Hardware</li>
+                    <li>Select Connect AirPrint printer</li>
+                    <li>Choose your printer</li>
+                    <li>Tap Save</li>
+                </ol>
+                
+                <h3>📲 Connect to Bluetooth Printer</h3>
+                <ol class="questions">
+                    <li>Square POS App > More > Settings > Hardware > Printers</li>
+                    <li>Select Connect to Bluetooth Printer</li>
+                    <li>Tap Select Printer</li>
+                    <li>Turn the printer on</li>
+                    <li>Go to device Settings > Bluetooth > toggle on</li>
+                    <li>Select the printer (PIN: 1234 if prompted)</li>
+                    <li>On printer: turn on Bluetooth and select your device</li>
+                    <li>Tap Pair when prompted</li>
+                    <li>Add printer name and assign profile</li>
+                </ol>
+                
+                <h3>🌐 Connect via Static IP Address (iOS only)</h3>
+                <ol class="questions">
+                    <li>Square POS App > More > Settings > Hardware > Printers</li>
+                    <li>Select Connect Printers</li>
+                    <li>Tap Select Printer > Advanced Printer setup</li>
+                    <li>Select printer type</li>
+                    <li>Enter IP address</li>
+                    <li>Tap Done (will search for printer)</li>
+                    <li>Add Printer Name and Save</li>
+                </ol>
+                
+                <h3>➕ Create a Printer Profile</h3>
+                <p><strong>From Square Dashboard:</strong></p>
+                <ol class="questions">
+                    <li>Dashboard > Settings > Devices > Printer Profiles</li>
+                    <li>Select Create a profile</li>
+                    <li>Add Profile name</li>
+                    <li>Toggle items to print (receipts, order tickets, etc.)</li>
+                    <li>Select store locations</li>
+                    <li>Click Save</li>
+                </ol>
+                
+                <p><strong>From Square POS App:</strong></p>
+                <ol class="questions">
+                    <li>More > Settings > Hardware > Printers</li>
+                    <li>Tap Profiles tab</li>
+                    <li>Tap Create profile</li>
+                    <li>Add Profile name</li>
+                    <li>Toggle items to print</li>
+                    <li>Select store locations</li>
+                    <li>Save (option to connect printer now or later)</li>
+                </ol>
+                
+                <div class="alert alert-info">
+                    <strong>Note:</strong> Printer profiles are available on POS within a few seconds on all active devices. You must manually assign a connected printer to the profile on each device.
+                </div>
+            </div>
+            
+            <!-- Networking -->
+            <div id="networking" class="phase hidden">
+                <h2>🌐 Networking Troubleshooting</h2>
+                <p>If an ethernet printer issue is not the result of improper setup or configuration, a poor network connection is often to blame.</p>
+                
+                <h3>📖 Glossary of Networking Terms</h3>
+                
+                <div class="glossary-term">
+                    <strong>Bandwidth</strong>
+                    The maximum data transfer rate of a network or internet connection, typically measured in bits per second (bps) or megabits per second (Mbps).
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>Ethernet</strong>
+                    A widely used networking technology for connecting devices in a LAN.
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>Firewall</strong>
+                    A security device or software that monitors and controls incoming and outgoing network traffic based on predetermined security rules.
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>IP Address</strong>
+                    A unique string of characters that identifies each computer using the Internet Protocol to communicate over a network.
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>ISP (Internet Service Provider)</strong>
+                    An organization that provides services related to accessing, using, managing, or participating in the internet.
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>LAN (Local Area Network)</strong>
+                    A network that connects devices in a limited geographical area, such as a home, office, or business.
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>MAC ID</strong>
+                    Media access control identifier - a 12-digit hexadecimal number assigned to each device connected to the network.
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>Modem</strong>
+                    Modulator-demodulator - a device connecting your home to your internet service provider (ISP) through a physical connection.
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>Router</strong>
+                    A device that forwards data packets to the appropriate parts of a computer network. Directs data packets to and from your devices.
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>Wi-Fi</strong>
+                    A technology that enables wireless local area networking using radio waves to provide high-speed internet and network connections.
+                </div>
+                
+                <div class="glossary-term">
+                    <strong>Wi-Fi Bands</strong>
+                    2.4 GHz band has longer range but more interference. 5 GHz band offers faster speeds and less interference but shorter range.
+                </div>
+                
+                <h3>⚠️ Signs of Network Issues</h3>
+                <ul class="questions">
+                    <li><strong>Slow Internet Speed:</strong> May indicate network congestion or ISP problems</li>
+                    <li><strong>Intermittent Connectivity:</strong> Frequent drops or outages suggest network instability</li>
+                    <li><strong>High Latency:</strong> Delay causing sluggish responsiveness in payments and POS access</li>
+                    <li><strong>Hardware Malfunctions:</strong> Abnormal blinking lights or overheating devices</li>
+                    <li><strong>Weak Wi-Fi Signal:</strong> Dead zones causing poor performance or dropped connections</li>
+                    <li><strong>Network Congestion:</strong> Slowdowns during peak usage times</li>
+                    <li><strong>Frequent Disconnections:</strong> Devices having difficulty staying connected</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showSection(sectionId) {
+            // Hide all phases
+            const phases = document.querySelectorAll('.phase');
+            phases.forEach(phase => {
+                phase.classList.add('hidden');
+            });
+            
+            // Show selected phase
+            const selectedPhase = document.getElementById(sectionId);
+            if (selectedPhase) {
+                selectedPhase.classList.remove('hidden');
+                selectedPhase.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        // Show level-setting by default
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('level-setting');
+        });
+    </script>
+</body>
+</html>
