@@ -756,6 +756,24 @@ function renderSpecificFixes(container, step) {
         container.appendChild(ispAlert);
     }
     
+    // Show factory reset warning for issues that may require device troubleshooting
+    if (issueType === 'Printer won\'t print at all' || issueType === 'Printer not connecting') {
+        const factoryResetWarning = document.createElement('div');
+        factoryResetWarning.className = 'alert alert-warning';
+        factoryResetWarning.innerHTML = `
+            <strong>⚠️ Before Attempting Hardware Troubleshooting:</strong><br><br>
+            <strong>We recommend sending diagnostics first:</strong> This helps Square Support analyze the issue without resetting your device.<br><br>
+            <strong>If troubleshooting leads to a factory reset, you'll need:</strong>
+            <ul style="margin: 10px 0 10px 20px;">
+                <li>Your Square login information (email and password)</li>
+                <li>Your Wi-Fi network name and password</li>
+                <li>To confirm there are NO pending payments from offline transactions</li>
+            </ul>
+            <strong>⚠️ Important:</strong> Check for any pending offline payments BEFORE doing a factory reset. Resetting without processing these payments could result in lost transactions.
+        `;
+        container.appendChild(factoryResetWarning);
+    }
+    
     specificFixes.forEach((fix, index) => {
         const fixCard = document.createElement('div');
         fixCard.className = 'fix-card';
