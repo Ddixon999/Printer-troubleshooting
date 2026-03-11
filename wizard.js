@@ -96,8 +96,8 @@ const steps = [
     {
         id: 'quick-fixes',
         type: 'fixes',
-        question: 'Try these quick fixes',
-        description: 'These steps resolve most printer issues. Try each one and check the box if it didn\'t work:',
+        question: 'Try these quick fixes first',
+        description: 'These basic steps resolve many printer issues. Try each one:',
         fixes: [
             {
                 title: 'Power Cycle',
@@ -128,18 +128,24 @@ const steps = [
                     'If not connected, try reconnecting it',
                     'Try printing a test receipt'
                 ]
-            },
-            {
-                title: 'Restart Your Device',
-                steps: [
-                    'Close the Square POS app',
-                    'Turn off your Square device',
-                    'Wait 30 seconds',
-                    'Turn it back on',
-                    'Open Square POS and try printing'
-                ]
             }
         ]
+    },
+    {
+        id: 'quick-worked',
+        type: 'choice',
+        question: 'Did those quick fixes work?',
+        description: 'Let us know if your printer is working now:',
+        options: [
+            'Yes! It\'s working now',
+            'No, still having issues'
+        ]
+    },
+    {
+        id: 'specific-fixes',
+        type: 'specific-fixes',
+        question: 'Let\'s try specific solutions for your issue',
+        description: 'Based on your problem, here are detailed troubleshooting steps:'
     },
     {
         id: 'worked',
@@ -202,6 +208,9 @@ function renderStep(step) {
             break;
         case 'fixes':
             renderFixes(stepDiv, step);
+            break;
+        case 'specific-fixes':
+            renderSpecificFixes(stepDiv, step);
             break;
         case 'summary':
             renderSummary(stepDiv, step);
@@ -390,6 +399,443 @@ function renderFixes(container, step) {
     btnGroup.appendChild(nextBtn);
     
     container.appendChild(btnGroup);
+}
+
+// Render specific fixes based on issue type
+function renderSpecificFixes(container, step) {
+    // Skip this step if quick fixes worked
+    if (state.answers['quick-worked'] === 'Yes! It\'s working now') {
+        nextStep();
+        return;
+    }
+    
+    const issueType = state.answers['issue-type'];
+    const printerType = state.answers['printer-type'];
+    
+    const specificFixes = getSpecificFixes(issueType, printerType);
+    
+    if (specificFixes.length === 0) {
+        nextStep();
+        return;
+    }
+    
+    specificFixes.forEach((fix, index) => {
+        const fixCard = document.createElement('div');
+        fixCard.className = 'fix-card';
+        
+        const title = document.createElement('h3');
+        title.textContent = `${index + 1}. ${fix.title}`;
+        fixCard.appendChild(title);
+        
+        if (fix.description) {
+            const desc = document.createElement('p');
+            desc.textContent = fix.description;
+            desc.style.marginBottom = '10px';
+            fixCard.appendChild(desc);
+        }
+        
+        const ol = document.createElement('ol');
+        fix.steps.forEach(stepText => {
+            const li = document.createElement('li');
+            li.textContent = stepText;
+            ol.appendChild(li);
+        });
+        fixCard.appendChild(ol);
+        
+        const checkbox = document.createElement('div');
+        checkbox.style.marginTop = '10px';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.id = `specific-fix-${index}`;
+        const label = document.createElement('label');
+        label.htmlFor = `specific-fix-${index}`;
+        label.textContent = ' I tried this and it didn\'t work';
+        label.style.marginLeft = '8px';
+        label.style.cursor = 'pointer';
+        checkbox.appendChild(cb);
+        checkbox.appendChild(label);
+        fixCard.appendChild(checkbox);
+        
+        container.appendChild(fixCard);
+    });
+    
+    const btnGroup = document.createElement('div');
+    btnGroup.className = 'button-group';
+    
+    const backBtn = document.createElement('button');
+    backBtn.className = 'btn btn-secondary';
+    backBtn.textContent = 'Back';
+    backBtn.onclick = () => previousStep();
+    btnGroup.appendChild(backBtn);
+    
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'btn';
+    nextBtn.textContent = 'Continue';
+    nextBtn.onclick = () => {
+        const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+        const tried = Array.from(checkboxes).map((cb, i) => ({
+            fix: specificFixes[i].title,
+            tried: cb.checked
+        }));
+        if (!state.fixesTried) state.fixesTried = [];
+        state.fixesTried = state.fixesTried.concat(tried);
+        nextStep();
+    };
+    btnGroup.appendChild(nextBtn);
+    
+    container.appendChild(btnGroup);
+}
+
+// Get specific fixes based on issue type
+function getSpecificFixes(issueType, printerType) {
+    const fixes = [];
+    
+    switch(issueType) {
+        case 'Printer won\'t print at all':
+            fixes.push({
+                title: 'Check Printer Profile Assignment',
+                description: 'Make sure your printer is assigned to a printer profile.',
+                steps: [
+                    'Open Square POS app',
+                    'Go to Settings > Hardware > Printers',
+                    'Tap on your printer name',
+                    'Make sure it\'s assigned to a profile (Receipts, Order Tickets, etc.)',
+                    'If not assigned, tap "Assign to Profile" and select the appropriate one',
+                    'Try printing a test receipt'
+                ]
+            });
+            
+            if (printerType === 'Wi-Fi Printer' || printerType === 'Ethernet Printer') {
+                fixes.push({
+                    title: 'Check Network Connection',
+                    description: 'Verify your printer and device are on the same network.',
+                    steps: [
+                        'Check that your printer shows a solid (not blinking) Wi-Fi or network light',
+                        'Print a network configuration page from your printer (check printer manual)',
+                        'Verify the IP address is in the same range as your Square device',
+                        'Make sure both devices are on the same network (not guest network)',
+                        'Try printing a test receipt'
+                    ]
+                });
+            }
+            
+            if (printerType === 'Bluetooth Printer') {
+                fixes.push({
+                    title: 'Re-pair Bluetooth Connection',
+                    description: 'Remove and reconnect the Bluetooth connection.',
+                    steps: [
+                        'Go to your device Settings > Bluetooth',
+                        'Find your printer and tap "Forget This Device"',
+                        'Turn printer Bluetooth off and back on',
+                        'In Square POS: Settings > Hardware > Printers',
+                        'Tap "Connect to Bluetooth Printer"',
+                        'Follow the pairing steps (PIN is usually 1234)',
+                        'Try printing a test receipt'
+                    ]
+                });
+            }
+            
+            fixes.push({
+                title: 'Check Printer Settings in Square',
+                description: 'Verify printer settings are configured correctly.',
+                steps: [
+                    'Open Square POS app',
+                    'Go to Settings > Hardware > Printers',
+                    'Tap Profiles',
+                    'Select your printer profile',
+                    'Make sure "Receipts" or "Order Tickets" is toggled ON',
+                    'Check that the correct location is selected',
+                    'Try printing a test receipt'
+                ]
+            });
+            break;
+            
+        case 'Paper jam':
+            fixes.push({
+                title: 'Clear the Paper Jam',
+                description: 'Carefully remove jammed paper from the printer.',
+                steps: [
+                    'Turn off the printer',
+                    'Open the paper cover',
+                    'Gently pull out any jammed paper (pull in the direction it normally feeds)',
+                    'Check for any torn pieces of paper inside',
+                    'Make sure the paper roll is loaded correctly (check for correct orientation)',
+                    'Close the cover and turn the printer back on',
+                    'Try printing a test receipt'
+                ]
+            });
+            
+            fixes.push({
+                title: 'Check Paper Quality and Loading',
+                description: 'Ensure you\'re using the correct paper type.',
+                steps: [
+                    'Remove the current paper roll',
+                    'Check that you\'re using thermal paper (not regular paper)',
+                    'Make sure the paper width matches your printer (usually 3 1/8" or 80mm)',
+                    'Load paper with the thermal side facing the correct direction',
+                    'Make sure the paper feeds straight (not at an angle)',
+                    'Don\'t overfill - leave some space in the paper compartment',
+                    'Try printing a test receipt'
+                ]
+            });
+            
+            fixes.push({
+                title: 'Clean the Printer',
+                description: 'Dust and debris can cause paper jams.',
+                steps: [
+                    'Turn off and unplug the printer',
+                    'Open the paper compartment',
+                    'Use a soft, dry cloth to wipe inside the paper path',
+                    'Check for any stuck labels or debris',
+                    'Clean the paper feed rollers gently',
+                    'Close everything and plug back in',
+                    'Try printing a test receipt'
+                ]
+            });
+            break;
+            
+        case 'Poor print quality (faded, lines, smudges)':
+            fixes.push({
+                title: 'Clean the Print Head',
+                description: 'A dirty print head is the most common cause of poor print quality.',
+                steps: [
+                    'Turn off the printer',
+                    'Open the paper compartment',
+                    'Locate the print head (the dark bar across the paper path)',
+                    'Use a cotton swab dipped in rubbing alcohol (70% or higher)',
+                    'Gently wipe the print head from side to side',
+                    'Let it dry for 2-3 minutes',
+                    'Close the compartment and turn on the printer',
+                    'Try printing a test receipt'
+                ]
+            });
+            
+            fixes.push({
+                title: 'Check Paper Quality',
+                description: 'Low-quality or old thermal paper causes faded prints.',
+                steps: [
+                    'Check if your thermal paper is expired or old',
+                    'Try scratching the paper with your fingernail - it should leave a dark mark',
+                    'If no mark appears, the paper is bad or loaded backwards',
+                    'Replace with fresh, high-quality thermal paper',
+                    'Make sure thermal side is facing the print head',
+                    'Try printing a test receipt'
+                ]
+            });
+            
+            fixes.push({
+                title: 'Adjust Print Density',
+                description: 'Some printers allow you to adjust print darkness.',
+                steps: [
+                    'Check your printer manual for density adjustment',
+                    'Some printers have a small dial or DIP switches',
+                    'Increase the density/darkness setting',
+                    'Try printing a test receipt',
+                    'Adjust until print quality is acceptable'
+                ]
+            });
+            break;
+            
+        case 'Printer not connecting':
+            if (printerType === 'Wi-Fi Printer') {
+                fixes.push({
+                    title: 'Reconnect to Wi-Fi Network',
+                    description: 'Re-establish the Wi-Fi connection on your printer.',
+                    steps: [
+                        'Find your printer\'s Wi-Fi setup button (check manual)',
+                        'Put printer in Wi-Fi setup mode',
+                        'Connect to your Wi-Fi network using printer controls or app',
+                        'Print a network status page to confirm connection',
+                        'Make sure printer and Square device are on the same network',
+                        'In Square POS: Settings > Hardware > reconnect the printer',
+                        'Try printing a test receipt'
+                    ]
+                });
+                
+                fixes.push({
+                    title: 'Check Router Settings',
+                    description: 'Some router settings can block printer connections.',
+                    steps: [
+                        'Log into your router admin page',
+                        'Check if "AP Isolation" or "Client Isolation" is enabled - turn it OFF',
+                        'Make sure your printer isn\'t on a guest network',
+                        'Check if MAC address filtering is blocking the printer',
+                        'Restart your router',
+                        'Wait 2 minutes for everything to reconnect',
+                        'Try printing a test receipt'
+                    ]
+                });
+            }
+            
+            if (printerType === 'Ethernet Printer') {
+                fixes.push({
+                    title: 'Check Ethernet Cable and Connection',
+                    description: 'Verify physical network connection.',
+                    steps: [
+                        'Check that Ethernet cable is firmly plugged into printer and router/switch',
+                        'Look for link lights on the Ethernet port (should be solid or blinking)',
+                        'Try a different Ethernet cable',
+                        'Try a different port on your router/switch',
+                        'Print a network status page from the printer',
+                        'Verify the printer has an IP address',
+                        'Try printing a test receipt'
+                    ]
+                });
+                
+                fixes.push({
+                    title: 'Set Up Static IP Address',
+                    description: 'A static IP prevents connection issues.',
+                    steps: [
+                        'Print your printer\'s network configuration page',
+                        'Note the current IP address',
+                        'Log into your router and reserve/assign a static IP for the printer',
+                        'Or configure static IP directly on the printer (check manual)',
+                        'In Square POS: Settings > Hardware > Printers',
+                        'Select "Advanced Printer Setup"',
+                        'Enter the static IP address',
+                        'Try printing a test receipt'
+                    ]
+                });
+            }
+            
+            if (printerType === 'USB Printer') {
+                fixes.push({
+                    title: 'Check USB Connection',
+                    description: 'Verify USB cable and ports are working.',
+                    steps: [
+                        'Unplug the USB cable from both printer and device',
+                        'Check the cable for any damage',
+                        'Make sure you\'re using a USB-B port on the printer (not USB-A)',
+                        'Plug cable firmly back into printer first',
+                        'Then plug into your Square device',
+                        'Try a different USB cable if available',
+                        'Try a different USB port on your device',
+                        'Try printing a test receipt'
+                    ]
+                });
+            }
+            
+            if (printerType === 'Bluetooth Printer') {
+                fixes.push({
+                    title: 'Reset Bluetooth Connection',
+                    description: 'Clear and re-establish Bluetooth pairing.',
+                    steps: [
+                        'Turn off Bluetooth on your Square device',
+                        'Turn off the printer',
+                        'Wait 30 seconds',
+                        'Turn printer back on',
+                        'Turn Bluetooth back on',
+                        'In Square POS: Settings > Hardware > Printers',
+                        'Remove/forget the old printer connection',
+                        'Connect to Bluetooth Printer and re-pair (PIN: 1234)',
+                        'Try printing a test receipt'
+                    ]
+                });
+            }
+            break;
+            
+        case 'Printer printing blank receipts':
+            fixes.push({
+                title: 'Check Paper Orientation',
+                description: 'Thermal paper must be loaded with the correct side facing up.',
+                steps: [
+                    'Remove the paper roll from the printer',
+                    'Scratch the paper with your fingernail',
+                    'The side that turns dark is the thermal side',
+                    'Reload paper with thermal side facing the print head',
+                    'Usually this means thermal side faces UP or OUT',
+                    'Check your printer manual for correct orientation',
+                    'Try printing a test receipt'
+                ]
+            });
+            
+            fixes.push({
+                title: 'Test the Paper',
+                description: 'Make sure the thermal paper is working.',
+                steps: [
+                    'Take a piece of the paper',
+                    'Scratch it with your fingernail or a coin',
+                    'If it doesn\'t turn dark, the paper is bad or expired',
+                    'Replace with fresh thermal paper',
+                    'Make sure you\'re not using regular paper',
+                    'Load correctly and try printing'
+                ]
+            });
+            
+            fixes.push({
+                title: 'Clean the Print Head',
+                description: 'A very dirty print head can cause blank prints.',
+                steps: [
+                    'Turn off the printer',
+                    'Open the paper compartment',
+                    'Use rubbing alcohol and a cotton swab',
+                    'Gently clean the print head (dark bar across paper path)',
+                    'Let dry for 2-3 minutes',
+                    'Reload paper correctly',
+                    'Try printing a test receipt'
+                ]
+            });
+            break;
+            
+        case 'Error lights or messages':
+            fixes.push({
+                title: 'Identify the Error Code',
+                description: 'Find out what the error means.',
+                steps: [
+                    'Note the pattern of blinking lights (how many blinks, what color)',
+                    'Check if there\'s an error message on the printer display',
+                    'Look up the error code in your printer manual',
+                    'Search online: "[printer model] [error code/light pattern]"',
+                    'Common errors: paper out, cover open, paper jam, overheating'
+                ]
+            });
+            
+            fixes.push({
+                title: 'Clear Common Error Conditions',
+                description: 'Fix the most common error causes.',
+                steps: [
+                    'Make sure paper is loaded correctly',
+                    'Check that all covers and doors are fully closed',
+                    'Clear any paper jams',
+                    'If printer feels hot, turn it off and let it cool for 10 minutes',
+                    'Check that cables are securely connected',
+                    'Turn printer off and on to reset the error',
+                    'Try printing a test receipt'
+                ]
+            });
+            
+            fixes.push({
+                title: 'Reset the Printer',
+                description: 'Perform a full reset of the printer.',
+                steps: [
+                    'Turn off the printer',
+                    'Unplug the power cable',
+                    'Wait 60 seconds',
+                    'Plug back in and turn on',
+                    'Wait for printer to fully initialize',
+                    'Check if error is cleared',
+                    'If error persists, check printer manual for factory reset procedure'
+                ]
+            });
+            break;
+            
+        case 'Other issue':
+            fixes.push({
+                title: 'General Troubleshooting',
+                description: 'Try these general solutions.',
+                steps: [
+                    'Restart both the printer and your Square device',
+                    'Check all cable connections',
+                    'Make sure printer firmware is up to date (check manufacturer website)',
+                    'Try removing and re-adding the printer in Square POS',
+                    'Check Square Status page for any known issues',
+                    'Contact Square Support with details about your specific issue'
+                ]
+            });
+            break;
+    }
+    
+    return fixes;
 }
 
 // Render summary step
