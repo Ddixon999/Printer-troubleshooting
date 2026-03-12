@@ -756,24 +756,6 @@ function renderSpecificFixes(container, step) {
         container.appendChild(ispAlert);
     }
     
-    // Show factory reset warning for issues that may require device troubleshooting
-    if (issueType === 'Printer won\'t print at all' || issueType === 'Printer not connecting') {
-        const factoryResetWarning = document.createElement('div');
-        factoryResetWarning.className = 'alert alert-warning';
-        factoryResetWarning.innerHTML = `
-            <strong>⚠️ Before Attempting Hardware Troubleshooting:</strong><br><br>
-            <strong>We recommend sending diagnostics first:</strong> This helps Square Support analyze the issue without resetting your device.<br><br>
-            <strong>If troubleshooting leads to a factory reset, you'll need:</strong>
-            <ul style="margin: 10px 0 10px 20px;">
-                <li>Your Square login information (email and password)</li>
-                <li>Your Wi-Fi network name and password</li>
-                <li>To confirm there are NO pending payments from offline transactions</li>
-            </ul>
-            <strong>⚠️ Important:</strong> Check for any pending offline payments BEFORE doing a factory reset. Resetting without processing these payments could result in lost transactions.
-        `;
-        container.appendChild(factoryResetWarning);
-    }
-    
     specificFixes.forEach((fix, index) => {
         const fixCard = document.createElement('div');
         fixCard.className = 'fix-card';
@@ -853,7 +835,10 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Make sure the printer is showing in Settings > Hardware',
                 'Try removing and re-adding the printer',
                 'Check if other hardware works (card reader, cash drawer)',
-                'If only printer isn\'t working, the issue is likely with the printer itself'
+                'If only printer isn\'t working, the issue is likely with the printer itself',
+                '⚠️ BEFORE FACTORY RESET: If needed, send diagnostics first (Settings > Help > Send Diagnostics)',
+                '⚠️ FACTORY RESET REQUIREMENTS: Have your Square login info, Wi-Fi password ready, and confirm NO pending offline payments',
+                'Factory Reset (last resort): Settings > Device > Factory Reset'
             ]
         },
         'Square Stand': {
@@ -879,7 +864,10 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Try removing and re-adding the printer',
                 'Check Terminal battery level (low battery can cause connection issues)',
                 'Try a different power outlet if plugged in',
-                'If only printer isn\'t working, the issue is likely with the printer itself'
+                'If only printer isn\'t working, the issue is likely with the printer itself',
+                '⚠️ BEFORE FACTORY RESET: If needed, send diagnostics first (Settings > Help > Send Diagnostics)',
+                '⚠️ FACTORY RESET REQUIREMENTS: Have your Square login info, Wi-Fi password ready, and confirm NO pending offline payments',
+                'Factory Reset (last resort): Settings > Device > Factory Reset'
             ]
         },
         'Square Handheld': {
@@ -892,7 +880,10 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Try removing and re-adding the printer',
                 'Check Handheld battery level (low battery can cause connection issues)',
                 'Try a different power outlet if plugged in',
-                'If only printer isn\'t working, the issue is likely with the printer itself'
+                'If only printer isn\'t working, the issue is likely with the printer itself',
+                '⚠️ BEFORE FACTORY RESET: If needed, send diagnostics first (Settings > Help > Send Diagnostics)',
+                '⚠️ FACTORY RESET REQUIREMENTS: Have your Square login info, Wi-Fi password ready, and confirm NO pending offline payments',
+                'Factory Reset (last resort): Settings > Device > Factory Reset'
             ]
         },
         'iPad/iPhone': {
