@@ -825,9 +825,8 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Try removing and re-adding the printer',
                 'Check if other hardware works (card reader, cash drawer)',
                 'If only printer isn\'t working, the issue is likely with the printer itself',
-                '⚠️ BEFORE FACTORY RESET: If needed, send diagnostics first (Settings > Help > Send Diagnostics)',
-                '⚠️ FACTORY RESET REQUIREMENTS: Have your Square login info, Wi-Fi password ready, and confirm NO pending offline payments',
-                'Factory Reset (last resort): Settings > Device > Factory Reset'
+                'Send Diagnostics: Go to Settings > Help > Send Diagnostics. This helps Square Support analyze your issue without resetting your device.',
+                '⚠️ BEFORE FACTORY RESET: Have your Square login info (email and password) ready, have your Wi-Fi network name and password ready, and confirm there are NO pending payments from offline transactions.\n\nFactory Reset (last resort): Settings > Device > Factory Reset'
             ]
         },
         'Square Stand': {
@@ -854,9 +853,8 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Check Terminal battery level (low battery can cause connection issues)',
                 'Try a different power outlet if plugged in',
                 'If only printer isn\'t working, the issue is likely with the printer itself',
-                '⚠️ BEFORE FACTORY RESET: If needed, send diagnostics first (Settings > Help > Send Diagnostics)',
-                '⚠️ FACTORY RESET REQUIREMENTS: Have your Square login info, Wi-Fi password ready, and confirm NO pending offline payments',
-                'Factory Reset (last resort): Settings > Device > Factory Reset'
+                'Send Diagnostics: Go to Settings > Help > Send Diagnostics. This helps Square Support analyze your issue without resetting your device.',
+                '⚠️ BEFORE FACTORY RESET: Have your Square login info (email and password) ready, have your Wi-Fi network name and password ready, and confirm there are NO pending payments from offline transactions.\n\nFactory Reset (last resort): Settings > Device > Factory Reset'
             ]
         },
         'Square Handheld': {
@@ -870,9 +868,8 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Check Handheld battery level (low battery can cause connection issues)',
                 'Try a different power outlet if plugged in',
                 'If only printer isn\'t working, the issue is likely with the printer itself',
-                '⚠️ BEFORE FACTORY RESET: If needed, send diagnostics first (Settings > Help > Send Diagnostics)',
-                '⚠️ FACTORY RESET REQUIREMENTS: Have your Square login info, Wi-Fi password ready, and confirm NO pending offline payments',
-                'Factory Reset (last resort): Settings > Device > Factory Reset'
+                'Send Diagnostics: Go to Settings > Help > Send Diagnostics. This helps Square Support analyze your issue without resetting your device.',
+                '⚠️ BEFORE FACTORY RESET: Have your Square login info (email and password) ready, have your Wi-Fi network name and password ready, and confirm there are NO pending payments from offline transactions.\n\nFactory Reset (last resort): Settings > Device > Factory Reset'
             ]
         },
         'iPad/iPhone': {
