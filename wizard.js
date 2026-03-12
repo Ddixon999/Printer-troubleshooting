@@ -2,7 +2,8 @@
 const state = {
     currentStep: 0,
     answers: {},
-    fixesTried: []
+    fixesTried: [],
+    stepHistory: [0] // Track which steps user actually visited
 };
 
 // Wizard Steps
@@ -1454,13 +1455,21 @@ function nextStep() {
             }
         }
         
+        // Add current step to history (only if not already the last item)
+        if (state.stepHistory[state.stepHistory.length - 1] !== state.currentStep) {
+            state.stepHistory.push(state.currentStep);
+        }
+        
         renderStep(steps[state.currentStep]);
     }
 }
 
 function previousStep() {
-    if (state.currentStep > 0) {
-        state.currentStep--;
+    // Remove current step from history
+    if (state.stepHistory.length > 1) {
+        state.stepHistory.pop();
+        // Go to the previous step in history
+        state.currentStep = state.stepHistory[state.stepHistory.length - 1];
         renderStep(steps[state.currentStep]);
     }
 }
