@@ -839,6 +839,7 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Force quit and reopen Square POS app',
                 'Check if the printer shows in Square POS Settings > Hardware',
                 'Try removing and re-adding the printer in Square POS',
+                'Delete and Reinstall Square POS App: Press and hold the Square POS app icon > Remove App > Delete App. Then reinstall from App Store and sign back in.',
                 'If only printer isn\'t working, the issue is likely with the printer itself'
             ]
         },
@@ -883,6 +884,7 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Check if printer shows in Square POS Settings > Hardware',
                 'For Bluetooth printers: Check Settings > Bluetooth is ON',
                 'Try removing and re-adding the printer in Square POS',
+                'Delete and Reinstall Square POS App: Press and hold the Square POS app icon > Remove App > Delete App. Then reinstall from App Store and sign back in.',
                 'If only printer isn\'t working, the issue is likely with the printer itself'
             ]
         },
@@ -898,6 +900,7 @@ function getDeviceTroubleshootingSteps(deviceType) {
                 'Check if printer shows in Square POS Settings > Hardware',
                 'For Bluetooth printers: Check Settings > Bluetooth is ON',
                 'Try removing and re-adding the printer in Square POS',
+                'Delete and Reinstall Square POS App: Go to Settings > Apps > Square POS > Uninstall. Then reinstall from Play Store and sign back in.',
                 'If only printer isn\'t working, the issue is likely with the printer itself'
             ]
         },
