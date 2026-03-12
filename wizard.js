@@ -1401,17 +1401,33 @@ function nextStep() {
             state.currentStep++; // Skip to next step
         }
         
+        // Skip basic-checks, quick-fixes, and quick-worked for paper jam and poor print quality
+        const issueType = state.answers['issue-type'];
+        const isPaperJamOrQuality = issueType === 'Paper jam' || issueType === 'Poor print quality (faded, lines, smudges)';
+        
+        if (isPaperJamOrQuality && 
+            (steps[state.currentStep].id === 'basic-checks' || 
+             steps[state.currentStep].id === 'quick-fixes' || 
+             steps[state.currentStep].id === 'quick-worked')) {
+            // Skip all three steps - jump to network-speed-check
+            while (state.currentStep < steps.length - 1 && 
+                   (steps[state.currentStep].id === 'basic-checks' || 
+                    steps[state.currentStep].id === 'quick-fixes' || 
+                    steps[state.currentStep].id === 'quick-worked')) {
+                state.currentStep++;
+            }
+        }
+        
         // Skip network-speed-check step if not applicable
         if (steps[state.currentStep].id === 'network-speed-check') {
             const printerType = state.answers['printer-type'];
-            const issueType = state.answers['issue-type'];
             const quickWorked = state.answers['quick-worked'];
             
             const isNetworkPrinter = printerType === 'Wi-Fi Printer' || printerType === 'Ethernet Printer';
             const isNetworkIssue = issueType === 'Printer not connecting' || issueType === 'Printer won\'t print at all';
             
-            // Skip if not a network printer, not a network issue, or if quick fixes worked
-            if (!isNetworkPrinter || !isNetworkIssue || quickWorked === 'Yes! It\'s working now') {
+            // Skip if not a network printer, not a network issue, or if quick fixes worked, or if paper jam/quality issue
+            if (!isNetworkPrinter || !isNetworkIssue || quickWorked === 'Yes! It\'s working now' || isPaperJamOrQuality) {
                 state.currentStep++; // Skip to next step
             }
         }
