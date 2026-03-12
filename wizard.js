@@ -1404,11 +1404,30 @@ function nextStep() {
             state.currentStep++; // Skip to next step
         }
         
+        // Check if user mentioned environmental changes that would require full troubleshooting
+        const whenStarted = (state.answers['when-started'] || '').toLowerCase();
+        const changes = (state.answers['changes'] || '').toLowerCase();
+        const combinedText = whenStarted + ' ' + changes;
+        
+        // Keywords that indicate environmental/setup changes requiring full troubleshooting
+        const environmentalKeywords = [
+            'power outage', 'outage', 'power went out', 'electricity', 'power loss',
+            'moved', 'relocated', 'new location', 'different location',
+            'update', 'software update', 'firmware', 'upgraded',
+            'internet', 'router', 'wifi changed', 'new wifi', 'network changed',
+            'new router', 'modem', 'isp'
+        ];
+        
+        const hasEnvironmentalChange = environmentalKeywords.some(keyword => 
+            combinedText.includes(keyword)
+        );
+        
         // Skip basic-checks, quick-fixes, and quick-worked for paper jam and poor print quality
+        // BUT ONLY if there's no environmental change mentioned
         const issueType = state.answers['issue-type'];
         const isPaperJamOrQuality = issueType === 'Paper jam' || issueType === 'Poor print quality (faded, lines, smudges)';
         
-        if (isPaperJamOrQuality && 
+        if (isPaperJamOrQuality && !hasEnvironmentalChange &&
             (steps[state.currentStep].id === 'basic-checks' || 
              steps[state.currentStep].id === 'quick-fixes' || 
              steps[state.currentStep].id === 'quick-worked')) {
