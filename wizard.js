@@ -1396,13 +1396,13 @@ function generateSummary() {
 // Navigation functions
 function nextStep() {
     if (state.currentStep < steps.length - 1) {
-        state.currentStep++;
+        let nextStepIndex = state.currentStep + 1;
         
         // Skip printer-type-help step if user selected a specific printer type (not "I'm not sure")
-        if (steps[state.currentStep].id === 'printer-type-help' && 
+        if (steps[nextStepIndex].id === 'printer-type-help' && 
             state.answers['printer-type'] && 
             state.answers['printer-type'] !== 'I\'m not sure') {
-            state.currentStep++; // Skip to next step
+            nextStepIndex++; // Skip to next step
         }
         
         // Check if user mentioned environmental changes that would require full troubleshooting
@@ -1429,20 +1429,20 @@ function nextStep() {
         const isPaperJamOrQuality = issueType === 'Paper jam' || issueType === 'Poor print quality (faded, lines, smudges)';
         
         if (isPaperJamOrQuality && !hasEnvironmentalChange &&
-            (steps[state.currentStep].id === 'basic-checks' || 
-             steps[state.currentStep].id === 'quick-fixes' || 
-             steps[state.currentStep].id === 'quick-worked')) {
+            (steps[nextStepIndex].id === 'basic-checks' || 
+             steps[nextStepIndex].id === 'quick-fixes' || 
+             steps[nextStepIndex].id === 'quick-worked')) {
             // Skip all three steps - jump to network-speed-check
-            while (state.currentStep < steps.length - 1 && 
-                   (steps[state.currentStep].id === 'basic-checks' || 
-                    steps[state.currentStep].id === 'quick-fixes' || 
-                    steps[state.currentStep].id === 'quick-worked')) {
-                state.currentStep++;
+            while (nextStepIndex < steps.length - 1 && 
+                   (steps[nextStepIndex].id === 'basic-checks' || 
+                    steps[nextStepIndex].id === 'quick-fixes' || 
+                    steps[nextStepIndex].id === 'quick-worked')) {
+                nextStepIndex++;
             }
         }
         
         // Skip network-speed-check step if not applicable
-        if (steps[state.currentStep].id === 'network-speed-check') {
+        if (steps[nextStepIndex].id === 'network-speed-check') {
             const printerType = state.answers['printer-type'];
             const quickWorked = state.answers['quick-worked'];
             
@@ -1451,9 +1451,12 @@ function nextStep() {
             
             // Skip if not a network printer, not a network issue, or if quick fixes worked, or if paper jam/quality issue
             if (!isNetworkPrinter || !isNetworkIssue || quickWorked === 'Yes! It\'s working now' || isPaperJamOrQuality) {
-                state.currentStep++; // Skip to next step
+                nextStepIndex++; // Skip to next step
             }
         }
+        
+        // Now update the actual step and add to history
+        state.currentStep = nextStepIndex;
         
         // Add current step to history (only if not already the last item)
         if (state.stepHistory[state.stepHistory.length - 1] !== state.currentStep) {
