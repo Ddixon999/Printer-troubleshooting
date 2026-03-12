@@ -488,19 +488,8 @@ function renderChecklist(container, step) {
 
 // Render network speed check step
 function renderNetworkSpeed(container, step) {
-    // Only show this step if it's a network-related issue with Wi-Fi or Ethernet printer
-    const printerType = state.answers['printer-type'];
-    const issueType = state.answers['issue-type'];
-    const quickWorked = state.answers['quick-worked'];
-    
-    const isNetworkPrinter = printerType === 'Wi-Fi Printer' || printerType === 'Ethernet Printer';
-    const isNetworkIssue = issueType === 'Printer not connecting' || issueType === 'Printer won\'t print at all';
-    
-    // Skip if not network-related or if quick fixes already worked
-    if (!isNetworkPrinter || !isNetworkIssue || quickWorked === 'Yes! It\'s working now') {
-        nextStep();
-        return;
-    }
+    // Note: Skip logic is now handled in nextStep() function
+    // This function only renders when the step should actually be shown
     
     // Create input fields
     const inputContainer = document.createElement('div');
@@ -1413,6 +1402,21 @@ function nextStep() {
             state.answers['printer-type'] && 
             state.answers['printer-type'] !== 'I\'m not sure') {
             state.currentStep++; // Skip to next step
+        }
+        
+        // Skip network-speed-check step if not applicable
+        if (steps[state.currentStep].id === 'network-speed-check') {
+            const printerType = state.answers['printer-type'];
+            const issueType = state.answers['issue-type'];
+            const quickWorked = state.answers['quick-worked'];
+            
+            const isNetworkPrinter = printerType === 'Wi-Fi Printer' || printerType === 'Ethernet Printer';
+            const isNetworkIssue = issueType === 'Printer not connecting' || issueType === 'Printer won\'t print at all';
+            
+            // Skip if not a network printer, not a network issue, or if quick fixes worked
+            if (!isNetworkPrinter || !isNetworkIssue || quickWorked === 'Yes! It\'s working now') {
+                state.currentStep++; // Skip to next step
+            }
         }
         
         renderStep(steps[state.currentStep]);
