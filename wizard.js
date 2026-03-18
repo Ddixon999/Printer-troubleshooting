@@ -65,8 +65,6 @@ const steps = [
         description: 'Select the issue that best describes your situation:',
         options: [
             'Printer won\'t print at all',
-            'Paper jam',
-            'Poor print quality (faded, lines, smudges)',
             'Printer not connecting',
             'Printer printing blank receipts',
             'Error lights or messages',
@@ -651,86 +649,6 @@ function renderSpecificFixes(container, step) {
     const issueType = state.answers['issue-type'];
     const printerType = state.answers['printer-type'];
     
-    // For paper jam and print quality issues, skip straight to the "worked" question
-    // since we're just directing them to the manufacturer
-    if (issueType === 'Paper jam' || issueType === 'Poor print quality (faded, lines, smudges)') {
-        // Show manufacturer contact info directly
-        const manufacturerCard = document.createElement('div');
-        manufacturerCard.className = 'fix-card';
-        
-        const title = document.createElement('h3');
-        title.textContent = 'Contact Printer Manufacturer';
-        manufacturerCard.appendChild(title);
-        
-        const desc = document.createElement('p');
-        if (issueType === 'Paper jam') {
-            desc.textContent = 'Paper jams require printer-specific troubleshooting. Contact the manufacturer for assistance.';
-        } else {
-            desc.textContent = 'Print quality issues require printer-specific troubleshooting. Contact the manufacturer for assistance.';
-        }
-        desc.style.marginBottom = '10px';
-        manufacturerCard.appendChild(desc);
-        
-        const ol = document.createElement('ol');
-        const steps = [
-            'Find your printer\'s make and model (usually on a label on the printer)',
-            'If you have a Star Micronics printer (sold on Square Hardware site):',
-            '  • Call Star Micronics Support: 1-800-782-7636',
-            '  • Visit: https://www.starmicronics.com/support/',
-            'For other printer brands:',
-            '  • Visit the manufacturer\'s support website',
-            issueType === 'Paper jam' ? '  • Look for paper jam troubleshooting guides' : '  • Look for print quality troubleshooting guides',
-            '  • Contact their technical support',
-            'Have your printer model number and serial number ready'
-        ];
-        
-        if (issueType === 'Poor print quality (faded, lines, smudges)') {
-            steps.push('Describe the specific quality issue (faded, lines, smudges, etc.)');
-        }
-        
-        steps.forEach(stepText => {
-            const li = document.createElement('li');
-            li.textContent = stepText;
-            ol.appendChild(li);
-        });
-        manufacturerCard.appendChild(ol);
-        
-        container.appendChild(manufacturerCard);
-        
-        // Add note that they should contact manufacturer
-        const alert = document.createElement('div');
-        alert.className = 'alert alert-info';
-        alert.innerHTML = '<strong>Note:</strong> These issues are best handled by the printer manufacturer who can provide model-specific guidance.';
-        container.appendChild(alert);
-        
-        // Skip to the "worked" question
-        const btnGroup = document.createElement('div');
-        btnGroup.className = 'button-group';
-        
-        const backBtn = document.createElement('button');
-        backBtn.className = 'btn btn-secondary';
-        backBtn.textContent = 'Back';
-        backBtn.onclick = () => previousStep();
-        btnGroup.appendChild(backBtn);
-        
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'btn';
-        nextBtn.textContent = 'Continue';
-        nextBtn.onclick = () => {
-            // Record that we showed manufacturer info
-            if (!state.fixesTried) state.fixesTried = [];
-            state.fixesTried.push({
-                fix: 'Contact Printer Manufacturer',
-                tried: true
-            });
-            nextStep();
-        };
-        btnGroup.appendChild(nextBtn);
-        
-        container.appendChild(btnGroup);
-        return;
-    }
-    
     const specificFixes = getSpecificFixes(issueType, printerType);
     
     if (specificFixes.length === 0) {
@@ -1005,43 +923,6 @@ function getSpecificFixes(issueType, printerType) {
                     '  • Contact their technical support',
                     'Have your printer model number and serial number ready',
                     'Explain that you\'ve tried basic troubleshooting and the printer still won\'t print'
-                ]
-            });
-            break;
-            
-        case 'Paper jam':
-            fixes.push({
-                title: 'Contact Printer Manufacturer',
-                description: 'Paper jams require printer-specific troubleshooting. Contact the manufacturer for assistance.',
-                steps: [
-                    'Find your printer\'s make and model (usually on a label on the printer)',
-                    'If you have a Star Micronics printer (sold on Square Hardware site):',
-                    '  • Call Star Micronics Support: 1-800-782-7636',
-                    '  • Visit: https://www.starmicronics.com/support/',
-                    'For other printer brands:',
-                    '  • Visit the manufacturer\'s support website',
-                    '  • Look for paper jam troubleshooting guides',
-                    '  • Contact their technical support',
-                    'Have your printer model number and serial number ready'
-                ]
-            });
-            break;
-            
-        case 'Poor print quality (faded, lines, smudges)':
-            fixes.push({
-                title: 'Contact Printer Manufacturer',
-                description: 'Print quality issues require printer-specific troubleshooting. Contact the manufacturer for assistance.',
-                steps: [
-                    'Find your printer\'s make and model (usually on a label on the printer)',
-                    'If you have a Star Micronics printer (sold on Square Hardware site):',
-                    '  • Call Star Micronics Support: 1-800-782-7636',
-                    '  • Visit: https://www.starmicronics.com/support/',
-                    'For other printer brands:',
-                    '  • Visit the manufacturer\'s support website',
-                    '  • Look for print quality troubleshooting guides',
-                    '  • Contact their technical support',
-                    'Have your printer model number and serial number ready',
-                    'Describe the specific quality issue (faded, lines, smudges, etc.)'
                 ]
             });
             break;
@@ -1423,34 +1304,17 @@ function nextStep() {
             combinedText.includes(keyword)
         );
         
-        // Skip basic-checks, quick-fixes, and quick-worked for paper jam and poor print quality
-        // BUT ONLY if there's no environmental change mentioned
-        const issueType = state.answers['issue-type'];
-        const isPaperJamOrQuality = issueType === 'Paper jam' || issueType === 'Poor print quality (faded, lines, smudges)';
-        
-        if (isPaperJamOrQuality && !hasEnvironmentalChange &&
-            (steps[nextStepIndex].id === 'basic-checks' || 
-             steps[nextStepIndex].id === 'quick-fixes' || 
-             steps[nextStepIndex].id === 'quick-worked')) {
-            // Skip all three steps - jump to network-speed-check
-            while (nextStepIndex < steps.length - 1 && 
-                   (steps[nextStepIndex].id === 'basic-checks' || 
-                    steps[nextStepIndex].id === 'quick-fixes' || 
-                    steps[nextStepIndex].id === 'quick-worked')) {
-                nextStepIndex++;
-            }
-        }
-        
         // Skip network-speed-check step if not applicable
         if (steps[nextStepIndex].id === 'network-speed-check') {
+            const issueType = state.answers['issue-type'];
             const printerType = state.answers['printer-type'];
             const quickWorked = state.answers['quick-worked'];
             
             const isNetworkPrinter = printerType === 'Wi-Fi Printer' || printerType === 'Ethernet Printer';
             const isNetworkIssue = issueType === 'Printer not connecting' || issueType === 'Printer won\'t print at all';
             
-            // Skip if not a network printer, not a network issue, or if quick fixes worked, or if paper jam/quality issue
-            if (!isNetworkPrinter || !isNetworkIssue || quickWorked === 'Yes! It\'s working now' || isPaperJamOrQuality) {
+            // Skip if not a network printer, not a network issue, or if quick fixes worked
+            if (!isNetworkPrinter || !isNetworkIssue || quickWorked === 'Yes! It\'s working now') {
                 nextStepIndex++; // Skip to next step
             }
         }
